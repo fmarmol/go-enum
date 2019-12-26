@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/abice/go-enum/generator"
+	"github.com/fmarmol/generator"
 	"github.com/go-easygen/cli"
 )
 

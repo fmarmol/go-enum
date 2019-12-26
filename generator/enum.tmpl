@@ -6,6 +6,10 @@ package {{.package}}
 
 import (
     "fmt"
+    "io"
+    "strconv"
+    "errors"
+    "encoding/json"
 )
 {{end -}}
 
@@ -53,6 +57,35 @@ func (x *{{.enum.Name}}) UnmarshalText(text []byte) error {
 	*x = tmp
 	return nil
 }
+
+// MarshalGQL implements the gqlgen interface
+func(x {{.enum.Name}}) MarshalGQL(w io.Writer) {
+    fmt.Fprintf(w, strconv.Quote(x.String()))
+}
+
+// UnmarshalGQL implatement the gqlgen interface
+func(x *{{.enum.Name}}) UnmarshalGQL(v interface{}) error {
+    str, ok := v.(string)
+    if !ok {
+        return errors.New("enums must be strings")
+    }
+    return x.UnmarshalText([]byte(str))
+}
+
+// MarshalJSON implements json interface
+func(x {{.enum.Name}}) MarshalJSON() ([]byte, error) {
+    return []byte(strconv.Quote(x.String())), nil
+}
+
+// UnmarshalJSON implements json interface
+func(x *{{.enum.Name}}) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+    return x.UnmarshalText([]byte(s))
+}
+
 {{end}}
 
 {{ if .sql }}
@@ -132,3 +165,4 @@ func (x {{.enum.Name}}) String() string {
 var _{{.enum.Name}}Value = {{ unmapify .enum .lowercase }}
 
 {{end}}
+

@@ -1,5 +1,6 @@
 COVERAGEDIR = coverage
 SERVICE=local
+BIN=go-enum
 ifdef CIRCLE_WORKING_DIRECTORY
   COVERAGEDIR = $(CIRCLE_WORKING_DIRECTORY)/coverage
 	SERVICE=circle-ci
@@ -20,7 +21,7 @@ install-deps:
 build:
 	go generate ./generator
 	if [ ! -d bin ]; then mkdir bin; fi
-	go build -v -o bin/go-enum .
+	go build -v -o bin/$(BIN) .
 
 fmt:
 	gofmt -l -w -s $$(find . -type f -name '*.go' -not -path "./vendor/*")
@@ -37,7 +38,7 @@ coveralls:
 
 clean:
 	go clean
-	rm -f bin/go-enum
+	rm -f bin/$(BIN)
 	rm -rf coverage/
 
 .PHONY: generate
